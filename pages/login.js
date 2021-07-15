@@ -22,7 +22,7 @@ export default function login() {
             .then(async (res) => {
                 setLoading(false)
                 if (res.data.success) {
-                    router.push("/presence")
+                    router.replace("/presence")
                     console.log(res)
                     localStorage.setItem("api_token", res.headers.token)
                     localStorage.setItem(

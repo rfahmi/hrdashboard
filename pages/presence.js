@@ -1,14 +1,13 @@
-import React, { useState, useCallback, useEffect } from "react"
+import router from "next/router"
+import React, { useCallback, useEffect, useState } from "react"
+import { toast } from "react-toastify"
 import Button from "../components/Button"
 import ButtonCard from "../components/ButtonCard"
 import Input from "../components/Input"
 import Layout from "../components/Layout"
-import Title from "../components/Title"
 import SubTitle from "../components/SubTitle"
+import Title from "../components/Title"
 import { api } from "../config/api"
-import router from "next/router"
-import fileDownload from "js-file-download"
-import { toast } from "react-toastify"
 
 export default function presence() {
     const [data, setdata] = useState(null)
