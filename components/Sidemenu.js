@@ -25,6 +25,11 @@ export default function Sidemenu() {
         },
     ]
 
+    const isInRoute = (path, current) => {
+        const r = current.split("/")
+        return "/" + r[1] === path
+    }
+
     return (
         <div className="flex bg-gray-100">
             <div className="flex flex-col sm:flex-row sm:justify-around">
@@ -34,16 +39,16 @@ export default function Sidemenu() {
                     </div>
                     <nav className="mt-10">
                         {menus.map((i, index) => (
-                            <Link href={i.path}>
+                            <Link key={"menu" + index} href={i.path}>
                                 <div
                                     className={`flex items-center py-4 px-4 ${
-                                        currentPath === i.path &&
+                                        isInRoute(i.path, currentPath) &&
                                         "bg-gray-200 text-primary border-l-8 border-primary"
                                     }`}
                                 >
                                     <span
                                         className={`mx-4 ${
-                                            currentPath === i.path &&
+                                            isInRoute(i.path, currentPath) &&
                                             "font-bold italic"
                                         }`}
                                     >

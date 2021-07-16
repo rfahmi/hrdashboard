@@ -30,32 +30,46 @@ export default function division() {
                 console.log(err)
             })
     })
+    const deleteData = useCallback(async (id) => {
+        setloading(true)
+        const token = localStorage.getItem("api_token")
+        await api
+            .delete(`/division/${id}`, {
+                headers: {
+                    token,
+                },
+            })
+            .then(async (res) => {
+                setloading(false)
+                if (res.data.success) {
+                    getData()
+                    toast.success(res.data.message, {
+                        position: "bottom-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    })
+                }
+            })
+            .catch((err) => {
+                setloading(false)
+                console.log(err)
+            })
+    })
     useEffect(() => {
         getData()
     }, [])
     return (
         <Layout loading={loading}>
-            <Title text="Data Divisi" />
+            <Title
+                text="Data Divisi"
+                buttonLabel="Create"
+                buttonClick={() => router.push("/division/create")}
+            />
             <div className="grid grid-cols-4 gap-2">
-                <Link href="/division/create">
-                    <Card>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 4v16m8-8H4"
-                            />
-                        </svg>
-                        <span className="text-md">Tambah Baru</span>
-                    </Card>
-                </Link>
                 {data &&
                     data.map((i, index) => (
                         <Card>
@@ -66,15 +80,15 @@ export default function division() {
                                 <button
                                     className="bg-primary rounded-md px-4 py-1 text-white"
                                     onClick={() =>
-                                        router.push({
-                                            pathname: "/division/edit",
-                                            query: { id: i._id },
-                                        })
+                                        router.push("/division/edit/" + i._id)
                                     }
                                 >
                                     Edit
                                 </button>
-                                <button className="bg-red-500 rounded-md px-4 py-1 text-white">
+                                <button
+                                    className="bg-red-500 rounded-md px-4 py-1 text-white"
+                                    onClick={() => deleteData(i._id)}
+                                >
                                     Hapus
                                 </button>
                             </div>

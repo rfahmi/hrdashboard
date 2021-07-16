@@ -1,22 +1,42 @@
-import React, { useState, useCallback, useEffect } from "react"
-import Link from "next/link"
-import router from "next/router"
-import Card from "../../components/Card"
-import Input from "../../components/Input"
-import Button from "../../components/Button"
-import Layout from "../../components/Layout"
-import Title from "../../components/Title"
-import { api } from "../../config/api"
+import { useRouter } from "next/router"
+import React, { useCallback, useEffect, useState } from "react"
 import { toast } from "react-toastify"
+import Button from "../../../components/Button"
+import Input from "../../../components/Input"
+import Layout from "../../../components/Layout"
+import Title from "../../../components/Title"
+import { api } from "../../../config/api"
 
-function create() {
+function edit() {
+    const router = useRouter()
+    const { id } = router.query
     const [data, setdata] = useState({ name: "" })
     const [loading, setloading] = useState(false)
-    const createData = useCallback(async () => {
+    const getData = useCallback(async () => {
         setloading(true)
         const token = localStorage.getItem("api_token")
         await api
-            .post(`/division`, data, {
+            .get(`/division/${id}`, {
+                headers: {
+                    token,
+                },
+            })
+            .then(async (res) => {
+                setloading(false)
+                if (res.data.success) {
+                    setdata(res.data.data)
+                }
+            })
+            .catch((err) => {
+                setloading(false)
+                console.log(err)
+            })
+    })
+    const updateData = useCallback(async () => {
+        setloading(true)
+        const token = localStorage.getItem("api_token")
+        await api
+            .put(`/division/${id}`, data, {
                 headers: {
                     token,
                 },
@@ -41,6 +61,9 @@ function create() {
                 console.log(err)
             })
     })
+    useEffect(() => {
+        id && getData()
+    }, [id])
     return (
         <Layout loading={loading}>
             <Title text="Buat Divisi" />
@@ -55,9 +78,9 @@ function create() {
                     onChange={(e) => setdata({ ...data, name: e.target.value })}
                 />
             </div>
-            <Button onClick={() => createData()}>Simpan</Button>
+            <Button onClick={() => updateData()}>Simpan</Button>
         </Layout>
     )
 }
 
-export default create
+export default edit

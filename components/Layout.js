@@ -7,7 +7,7 @@ export default function Layout(props) {
         <div className="flex w-full">
             <Sidemenu />
             <div className="w-full p-8 relative">
-                {props.loading && <Loading />}
+                {props?.loading && <Loading />}
                 {props.children}
             </div>
         </div>
