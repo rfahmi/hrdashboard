@@ -35,7 +35,8 @@ const qr = () => {
                 Silahkan scan QR diatas dengan aplikasi QRPresence
             </span>
             <span className="text-sm">
-                Berlaku hingga {moment().endOf("day").format("Y-m-d H:mm:ss")}
+                Berlaku hingga{" "}
+                {moment().endOf("day").format("YYYY-MM-DD H:mm:ss")}
             </span>
         </div>
     )
