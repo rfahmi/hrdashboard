@@ -9,7 +9,7 @@ import SubTitle from "../components/SubTitle"
 import Title from "../components/Title"
 import { api } from "../config/api"
 
-export default function presence() {
+const presence = () => {
     const [data, setdata] = useState(null)
     const [loading, setloading] = useState(false)
 
@@ -225,3 +225,5 @@ export default function presence() {
         </Layout>
     )
 }
+
+export default presence
