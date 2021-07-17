@@ -58,27 +58,31 @@ export default function login() {
     return (
         <div className="flex flex-row flex-1 h-screen">
             <div
-                className="w-2/3 h-screen bg-gray-500 relative"
+                className="w-2/3 h-screen bg-gray-100"
                 style={{
                     backgroundImage: `url('${banner.src}')`,
-                    width: "100%",
+                    // width: "100%",
                     backgroundPositionY: "center",
                     backgroundRepeat: "no-repeat",
                     backgroundSize: "cover",
                 }}
             />
-            <div className="flex flex-col w-1/3 h-full">
+            <div className="flex flex-col w-2/6">
                 <div className="flex flex-col h-full justify-center items-center">
                     <Image src={logo} width={200} height={30} />
                     <span className="mt-4">HR Dashboard</span>
                 </div>
                 <form className="flex flex-col" onSubmit={onLoginPressed}>
-                    <div className="p-4">
+                    <div className="p-8">
                         <div className="mb-8">
                             <label className="block text-gray-700 text-md font-bold mb-2">
                                 NIK
                             </label>
-                            <Input id="nik" type="text" placeholder="nik" />
+                            <Input
+                                id="nik"
+                                type="text"
+                                placeholder="Masukkan Nomor NIK"
+                            />
                         </div>
                         <div className="mb-8">
                             <label className="block text-gray-700 text-md font-bold mb-2">
@@ -87,7 +91,7 @@ export default function login() {
                             <Input
                                 id="password"
                                 type="password"
-                                placeholder="password"
+                                placeholder="Masukkan Password"
                             />
                         </div>
                     </div>

@@ -72,7 +72,7 @@ export default function division() {
             <div className="grid grid-cols-4 gap-2">
                 {data &&
                     data.map((i, index) => (
-                        <Card>
+                        <Card key={"division" + index}>
                             <span className="text-xl font-bold mb-4">
                                 {i.name}
                             </span>

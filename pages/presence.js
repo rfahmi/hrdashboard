@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import Button from "../components/Button"
 import ButtonCard from "../components/ButtonCard"
-import Input from "../components/Input"
+import InputMask from "../components/InputMask"
 import Layout from "../components/Layout"
 import SubTitle from "../components/SubTitle"
 import Title from "../components/Title"
@@ -138,12 +138,14 @@ export default function presence() {
                     <label className="block text-gray-700 text-md font-bold mb-2">
                         Uang Makan
                     </label>
-                    <Input
+                    <InputMask
                         id="uangMakan"
-                        type="number"
+                        type="text"
+                        thousandSeparator
+                        prefix={"Rp "}
                         value={data?.uangMakan}
-                        onChange={(e) =>
-                            setdata({ ...data, uangMakan: e.target.value })
+                        onValueChange={(e) =>
+                            setdata({ ...data, uangMakan: e.value })
                         }
                     />
                 </div>
@@ -151,12 +153,14 @@ export default function presence() {
                     <label className="block text-gray-700 text-md font-bold mb-2">
                         Denda Telat
                     </label>
-                    <Input
+                    <InputMask
                         id="dendaTelat"
-                        type="number"
+                        type="text"
+                        thousandSeparator
+                        prefix={"Rp "}
                         value={data?.dendaTelat}
-                        onChange={(e) =>
-                            setdata({ ...data, dendaTelat: e.target.value })
+                        onValueChange={(e) =>
+                            setdata({ ...data, dendaTelat: e.value })
                         }
                     />
                 </div>
@@ -164,14 +168,15 @@ export default function presence() {
                     <label className="block text-gray-700 text-md font-bold mb-2">
                         Kelipatan Telat
                     </label>
-                    <Input
+                    <InputMask
+                        suffix={" Menit"}
                         id="kelipatanTelatMin"
-                        type="number"
+                        type="text"
                         value={data?.kelipatanTelatMin}
-                        onChange={(e) =>
+                        onValueChange={(e) =>
                             setdata({
                                 ...data,
-                                kelipatanTelatMin: e.target.value,
+                                kelipatanTelatMin: Number(e.value),
                             })
                         }
                     />
@@ -180,7 +185,7 @@ export default function presence() {
             <Button onClick={() => updateSetting()}>Simpan</Button>
 
             <SubTitle text="Unduh Laporan" />
-            <div className="flex flex-col mr-2">
+            <div className="flex flex-row">
                 <ButtonCard onClick={() => downloadReport()}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -198,9 +203,7 @@ export default function presence() {
                     </svg>
                     Download Excel
                 </ButtonCard>
-            </div>
-            <SubTitle text="Lainnya" />
-            <div className="flex flex-col mr-2">
+
                 <ButtonCard onClick={() => generateQR()}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"

@@ -33,40 +33,43 @@ export default function Sidemenu() {
     return (
         <div className="flex bg-gray-100">
             <div className="flex flex-col sm:flex-row sm:justify-around">
-                <div className="w-64 h-screen">
-                    <div className="flex items-center justify-center mt-10 px-8">
-                        <Image src={logo} alt="Picture of the author" />
+                <div className="w-64 h-screen relative">
+                    <div className="flex items-center justify-center mt-10 px-8 w-48">
+                        <Image src={logo} alt="Logo" />
                     </div>
                     <nav className="mt-10">
                         {menus.map((i, index) => (
                             <Link key={"menu" + index} href={i.path}>
-                                <div
-                                    className={`flex items-center py-4 px-4 ${
+                                <a
+                                    className={`flex items-center py-4 px-4 hover:bg-gray-200 ${
                                         isInRoute(i.path, currentPath) &&
-                                        "bg-gray-200 text-primary border-l-8 border-primary"
+                                        "pl-2 bg-gray-200 text-primary border-l-8 border-primary"
                                     }`}
                                 >
                                     <span
                                         className={`mx-4 ${
                                             isInRoute(i.path, currentPath) &&
-                                            "font-bold italic"
+                                            "font-bold"
                                         }`}
                                     >
                                         {i.name}
                                     </span>
-                                </div>
+                                </a>
                             </Link>
                         ))}
                     </nav>
 
-                    <div className="absolute bottom-0 my-10">
+                    <div className="absolute bottom-0 left-0 right-0">
                         <a
-                            onClick={() => {
+                            className="flex w-full items-center bg-gray-600 hover:bg-gray-800"
+                            href="/logout"
+                            onClick={(e) => {
+                                e.preventDefault()
                                 router.replace("/")
                                 localStorage.clear()
                             }}
                         >
-                            <div className="flex items-center py-2 px-8 text-gray-500 hover:text-gray-600">
+                            <div className="flex items-center py-4 px-8 text-white">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     className="h-6 w-6"

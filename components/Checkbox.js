@@ -1,10 +1,14 @@
 import React from "react"
 
-export default function Checkbox({ onChange, label }) {
+export default function Checkbox({ onChange, label, checked }) {
     return (
         <label onChange={onChange} className="flex justify-start items-start">
             <div className="cb border-2 rounded border-gray-400 w-6 h-6 flex flex-shrink-0 justify-center items-center mr-2 focus-within:border-primary">
-                <input type="checkbox" className="opacity-0 absolute" />
+                <input
+                    type="checkbox"
+                    className="opacity-0 absolute"
+                    checked={checked}
+                />
                 <svg
                     className="fill-current hidden w-4 h-4 text-primary pointer-events-none"
                     viewBox="0 0 20 20"
