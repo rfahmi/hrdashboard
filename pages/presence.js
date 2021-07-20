@@ -5,13 +5,28 @@ import Button from "../components/Button"
 import ButtonCard from "../components/ButtonCard"
 import InputMask from "../components/InputMask"
 import Layout from "../components/Layout"
+import Select from "../components/Select"
 import SubTitle from "../components/SubTitle"
 import Title from "../components/Title"
 import { api } from "../config/api"
+import Modal from "react-modal"
+import moment from "moment"
+import "moment/locale/id"
 
 const presence = () => {
+    const m = moment()
     const [data, setdata] = useState(null)
     const [loading, setloading] = useState(false)
+    const [modalopen, setmodalopen] = useState(false)
+    const [downloadyear, setdownloadyear] = useState(2021)
+    const [downloadmonth, setdownloadmonth] = useState(1)
+    const months = Array.from(Array(11)).map((_, index) => {
+        let res = {
+            value: m.month(index).format("M"),
+            label: m.month(index).format("MMMM"),
+        }
+        return res
+    })
 
     const getSetting = useCallback(async () => {
         setloading(true)
@@ -69,8 +84,8 @@ const presence = () => {
             .post(
                 `/presence/report`,
                 {
-                    year: 2021,
-                    month: 6,
+                    year: downloadyear,
+                    month: downloadmonth,
                 },
                 {
                     headers: {
@@ -84,7 +99,10 @@ const presence = () => {
                 const url = window.URL.createObjectURL(new Blob([res.data]))
                 const link = document.createElement("a")
                 link.href = url
-                link.setAttribute("download", "file.xlsx") //or any other extension
+                link.setAttribute(
+                    "download",
+                    `Presence Report ${downloadyear}-${downloadmonth}.xlsx`
+                )
                 document.body.appendChild(link)
                 link.click()
                 toast.success("Download started!", {
@@ -132,6 +150,63 @@ const presence = () => {
     return (
         <Layout loading={loading}>
             <Title text="Presensi" />
+            <Modal
+                isOpen={modalopen}
+                style={modalStyle}
+                contentLabel="Example Modal"
+            >
+                <div className="modal-content py-4 text-left px-6">
+                    <div className="flex justify-between items-center pb-3">
+                        <p className="text-2xl font-bold">Pilih Bulan</p>
+                        <div
+                            className="modal-close cursor-pointer z-50"
+                            onClick={() => setmodalopen(false)}
+                        >
+                            <svg
+                                className="fill-current text-black"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 18 18"
+                            >
+                                <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style={{ marginBottom: 6 }}>
+                            <Select
+                                value={downloadyear}
+                                onChange={(e) =>
+                                    setdownloadyear(e.target.value)
+                                }
+                                options={[{ value: 2021, label: "2021" }]}
+                            />
+                        </div>
+                        <div style={{ marginBottom: 6 }}>
+                            <Select
+                                value={downloadmonth}
+                                onChange={(e) =>
+                                    setdownloadmonth(e.target.value)
+                                }
+                                options={months}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end pt-2">
+                        <button
+                            className="modal-close px-4 bg-primary p-3 rounded-lg text-white hover:bg-blue-900"
+                            onClick={() =>
+                                downloadReport().then(() => setmodalopen(false))
+                            }
+                        >
+                            Download
+                        </button>
+                    </div>
+                </div>
+            </Modal>
             <SubTitle text="Pengaturan Laporan" />
             <div className="flex flex-row justify-between mb-4">
                 <div className="flex flex-col mr-2">
@@ -186,7 +261,7 @@ const presence = () => {
 
             <SubTitle text="Unduh Laporan" />
             <div className="flex flex-row">
-                <ButtonCard onClick={() => downloadReport()}>
+                <ButtonCard onClick={() => setmodalopen(true)}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-12 w-12 text-gray-700"
@@ -224,6 +299,22 @@ const presence = () => {
             </div>
         </Layout>
     )
+}
+
+const modalStyle = {
+    overlay: {
+        backgroundColor: "rgba(0,0,0,0.7)",
+    },
+    content: {
+        width: "36%",
+        padding: 0,
+        top: "50%",
+        left: "50%",
+        right: "auto",
+        bottom: "auto",
+        marginRight: "-50%",
+        transform: "translate(-50%, -50%)",
+    },
 }
 
 export default presence
