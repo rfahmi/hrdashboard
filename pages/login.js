@@ -15,7 +15,7 @@ export default function login() {
         e.preventDefault()
         setLoading(true)
         await api
-            .post("/user/login", {
+            .post("/user/login-admin", {
                 nik: e.target.nik.value,
                 password: e.target.password.value,
             })
