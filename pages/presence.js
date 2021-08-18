@@ -321,9 +321,9 @@ const presence = () => {
                         <InputMask
                             id="jamTelatMasuk"
                             type="text"
-                            format="##:##"
-                            placeholder="HH:MM"
-                            mask={["H", "H", "M", "M"]}
+                            format="##:##:##"
+                            placeholder="HH:MM:SS"
+                            mask={["H", "H", "M", "M", "SS", "SS"]}
                             value={data?.jamTelatMasuk}
                             onValueChange={(e) =>
                                 setdata({
