@@ -1,5 +1,8 @@
+import moment from "moment"
+import "moment/locale/id"
 import router from "next/router"
 import React, { useCallback, useEffect, useState } from "react"
+import Modal from "react-modal"
 import { toast } from "react-toastify"
 import Button from "../components/Button"
 import ButtonCard from "../components/ButtonCard"
@@ -9,15 +12,16 @@ import Select from "../components/Select"
 import SubTitle from "../components/SubTitle"
 import Title from "../components/Title"
 import { api } from "../config/api"
-import Modal from "react-modal"
-import moment from "moment"
-import "moment/locale/id"
+import Image from "next/image"
 
 const presence = () => {
     const m = moment()
     const [data, setdata] = useState(null)
+    const [history, sethistory] = useState(null)
     const [loading, setloading] = useState(false)
     const [modalopen, setmodalopen] = useState(false)
+    const [modalphotoopen, setmodalphotoopen] = useState(false)
+    const [selectedhistory, setselectedhistory] = useState(null)
     const [downloadyear, setdownloadyear] = useState(2021)
     const [downloadmonth, setdownloadmonth] = useState(1)
     const months = Array.from(Array(11)).map((_, index) => {
@@ -41,6 +45,27 @@ const presence = () => {
                 setloading(false)
                 if (res.data.success) {
                     setdata(res.data.data)
+                }
+            })
+            .catch((err) => {
+                setloading(false)
+                console.log(err)
+            })
+    })
+    const getHistory = useCallback(async () => {
+        setloading(true)
+        const date = moment().format("YYYY-MM-DD")
+        const token = localStorage.getItem("api_token")
+        await api
+            .get(`/presence/history/${date}`, {
+                headers: {
+                    token,
+                },
+            })
+            .then(async (res) => {
+                setloading(false)
+                if (res.data.success) {
+                    sethistory(res.data.data)
                 }
             })
             .catch((err) => {
@@ -145,11 +170,57 @@ const presence = () => {
 
     useEffect(() => {
         getSetting()
+        getHistory()
     }, [])
 
     return (
         <Layout loading={loading}>
             <Title text="Presensi" />
+            <Modal
+                isOpen={modalphotoopen}
+                style={modalStyle}
+                contentLabel="Example Modal"
+            >
+                <div className="modal-content text-left">
+                    <div className="flex justify-between items-center p-4">
+                        <div>
+                            <p className="text-xl font-bold">
+                                {selectedhistory?.user?.name}
+                            </p>
+                            <p className="text-md">
+                                {moment(selectedhistory?.timestamp)
+                                    .utc(false)
+                                    .format("YYYY-MM-DD HH:mm:ss")}
+                            </p>
+                        </div>
+                        <div
+                            className="modal-close cursor-pointer z-50"
+                            onClick={() => setmodalphotoopen(false)}
+                        >
+                            <svg
+                                className="fill-current text-black"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 18 18"
+                            >
+                                <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div>
+                        <img
+                            src={
+                                "https://rfahmibucket.s3.amazonaws.com/" +
+                                selectedhistory?.photo
+                            }
+                            width="100%"
+                            height="auto"
+                        />
+                    </div>
+                </div>
+            </Modal>
             <Modal
                 isOpen={modalopen}
                 style={modalStyle}
@@ -207,7 +278,7 @@ const presence = () => {
                     </div>
                 </div>
             </Modal>
-            <SubTitle text="Pengaturan Laporan" />
+            <SubTitle text="Tools" />
             <div className="flex flex-row justify-between mb-4">
                 <div className="flex flex-col mr-2">
                     <label className="block text-gray-700 text-md font-bold mb-2">
@@ -297,6 +368,151 @@ const presence = () => {
                     Tampilkan QR
                 </ButtonCard>
             </div>
+
+            <SubTitle text="Presensi Hari ini" />
+            <table className="min-w-max w-full table-auto">
+                <thead>
+                    <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                        <th className="py-3 px-6 text-left">Nama</th>
+                        <th className="py-3 px-6 text-left">Jenis Presensi</th>
+                        <th className="py-3 px-6 text-left">Waktu</th>
+                        <th className="py-3 px-6 text-left">Metode</th>
+                        <th className="py-3 px-6 text-left">Foto</th>
+                        <th className="py-3 px-6 text-left">Status</th>
+                    </tr>
+                </thead>
+                <tbody className="text-gray-600 text-sm font-light">
+                    {history &&
+                        history.map((i, index) => (
+                            <tr
+                                key={"usertr" + index}
+                                className="border-b border-gray-200 hover:bg-gray-100"
+                            >
+                                <td className="py-3 px-6 text-left whitespace-nowrap">
+                                    <div className="flex items-center">
+                                        <span className="font-medium">
+                                            {i.user.name}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td className="py-3 px-6 text-left">
+                                    <div className="flex items-center">
+                                        {i.type === "in" ? (
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-6 w-6 text-green-500"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M15 13l-3 3m0 0l-3-3m3 3V8m0 13a9 9 0 110-18 9 9 0 010 18z"
+                                                />
+                                            </svg>
+                                        ) : (
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-6 w-6 text-red-500"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 110 18 9 9 0 010-18z"
+                                                />
+                                            </svg>
+                                        )}
+                                        <span className="ml-2">
+                                            {i.type.toUpperCase()}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td className="py-3 px-6 text-left">
+                                    <div className="flex items-center">
+                                        <span>
+                                            {moment(i.timestamp)
+                                                .utc(false)
+                                                .format("HH:mm:ss")}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td className="py-3 px-6 text-left">
+                                    <div className="flex items-center">
+                                        <span>
+                                            {i.photo ? "Selfie" : "QR Scan"}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td className="py-3 px-6 text-left">
+                                    <div className="flex items-center">
+                                        {i.photo ? (
+                                            <a
+                                                onClick={() => {
+                                                    setselectedhistory(i)
+                                                    setmodalphotoopen(true)
+                                                }}
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-6 w-6"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                                    />
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                                    />
+                                                </svg>
+                                            </a>
+                                        ) : (
+                                            <span>-</span>
+                                        )}
+                                    </div>
+                                </td>
+                                <td className="py-3 px-6 text-left">
+                                    <div className="flex items-center">
+                                        <span>
+                                            {i.type === "in" ? (
+                                                i.isLate ? (
+                                                    <div className="flex flex-shrink-0 text-xs items-center pr-2">
+                                                        <div className="bg-red-200 text-red-900 px-2 py-1 rounded">
+                                                            {"Terlambat " +
+                                                                i.lateDurationMin +
+                                                                " min"}
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-shrink-0 text-xs items-center pr-2">
+                                                        <div className="bg-green-200 text-green-900 px-2 py-1 rounded">
+                                                            Tepat Waktu
+                                                        </div>
+                                                    </div>
+                                                )
+                                            ) : (
+                                                "-"
+                                            )}
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                </tbody>
+            </table>
         </Layout>
     )
 }
