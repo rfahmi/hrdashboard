@@ -470,9 +470,9 @@ const presence = () => {
                                 <td className="py-3 px-6 text-left">
                                     <div className="flex items-center">
                                         <span>
-                                            {moment(i.timestamp)
-                                                .utc(false)
-                                                .format("HH:mm:ss")}
+                                            {moment(i.timestamp).format(
+                                                "HH:mm:ss"
+                                            )}
                                         </span>
                                     </div>
                                 </td>
