@@ -323,7 +323,7 @@ const presence = () => {
                             type="text"
                             format="##:##:##"
                             placeholder="HH:MM:SS"
-                            mask={["H", "H", "M", "M", "SS", "SS"]}
+                            mask={["H", "H", "M", "M", "S", "S"]}
                             value={data?.jamTelatMasuk}
                             onValueChange={(e) =>
                                 setdata({
