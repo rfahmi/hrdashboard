@@ -69,7 +69,7 @@ export default function division() {
                 buttonLabel="Create"
                 buttonClick={() => router.push("/division/create")}
             />
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-6 gap-2">
                 {data &&
                     data.map((i, index) => (
                         <Card key={"division" + index}>

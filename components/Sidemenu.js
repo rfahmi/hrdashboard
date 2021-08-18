@@ -23,6 +23,11 @@ export default function Sidemenu() {
             icon: "",
             path: "/user",
         },
+        {
+            name: "Tentang Aplikasi",
+            icon: "",
+            path: "/about",
+        },
     ]
 
     const isInRoute = (path, current) => {
@@ -59,7 +64,7 @@ export default function Sidemenu() {
                         ))}
                     </nav>
 
-                    <div className="absolute bottom-0 left-0 right-0">
+                    <div className="fixed bottom-0 left-0 w-64">
                         <a
                             className="flex w-full items-center bg-gray-600 hover:bg-gray-800"
                             href="/logout"

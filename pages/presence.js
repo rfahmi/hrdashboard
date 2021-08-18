@@ -12,7 +12,9 @@ import Select from "../components/Select"
 import SubTitle from "../components/SubTitle"
 import Title from "../components/Title"
 import { api } from "../config/api"
-import Image from "next/image"
+import DatePicker from "react-date-picker/dist/entry.nostyle"
+import "react-date-picker/dist/DatePicker.css"
+import "react-calendar/dist/Calendar.css"
 
 const presence = () => {
     const m = moment()
@@ -24,6 +26,7 @@ const presence = () => {
     const [selectedhistory, setselectedhistory] = useState(null)
     const [downloadyear, setdownloadyear] = useState(2021)
     const [downloadmonth, setdownloadmonth] = useState(1)
+    const [datepick, setdatepick] = useState(new Date())
     const months = Array.from(Array(11)).map((_, index) => {
         let res = {
             value: m.month(index).format("M"),
@@ -52,9 +55,9 @@ const presence = () => {
                 console.log(err)
             })
     })
-    const getHistory = useCallback(async () => {
+    const getHistory = useCallback(async (d) => {
         setloading(true)
-        const date = moment().format("YYYY-MM-DD")
+        const date = moment(d).format("YYYY-MM-DD")
         const token = localStorage.getItem("api_token")
         await api
             .get(`/presence/history/${date}`, {
@@ -170,7 +173,7 @@ const presence = () => {
 
     useEffect(() => {
         getSetting()
-        getHistory()
+        getHistory(new Date())
     }, [])
 
     return (
@@ -280,52 +283,73 @@ const presence = () => {
             </Modal>
             <SubTitle text="Tools" />
             <div className="flex flex-row justify-between mb-4">
-                <div className="flex flex-col mr-2">
-                    <label className="block text-gray-700 text-md font-bold mb-2">
-                        Uang Makan
-                    </label>
-                    <InputMask
-                        id="uangMakan"
-                        type="text"
-                        thousandSeparator
-                        prefix={"Rp "}
-                        value={data?.uangMakan}
-                        onValueChange={(e) =>
-                            setdata({ ...data, uangMakan: e.value })
-                        }
-                    />
-                </div>
-                <div className="flex flex-col mr-2">
-                    <label className="block text-gray-700 text-md font-bold mb-2">
-                        Denda Telat
-                    </label>
-                    <InputMask
-                        id="dendaTelat"
-                        type="text"
-                        thousandSeparator
-                        prefix={"Rp "}
-                        value={data?.dendaTelat}
-                        onValueChange={(e) =>
-                            setdata({ ...data, dendaTelat: e.value })
-                        }
-                    />
-                </div>
-                <div className="flex flex-col mr-2">
-                    <label className="block text-gray-700 text-md font-bold mb-2">
-                        Kelipatan Telat
-                    </label>
-                    <InputMask
-                        suffix={" Menit"}
-                        id="kelipatanTelatMin"
-                        type="text"
-                        value={data?.kelipatanTelatMin}
-                        onValueChange={(e) =>
-                            setdata({
-                                ...data,
-                                kelipatanTelatMin: Number(e.value),
-                            })
-                        }
-                    />
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-6 gap-2">
+                    <div>
+                        <label className="block text-gray-700 text-md font-bold mb-2">
+                            Uang Makan
+                        </label>
+                        <InputMask
+                            id="uangMakan"
+                            type="text"
+                            thousandSeparator
+                            prefix={"Rp "}
+                            value={data?.uangMakan}
+                            onValueChange={(e) =>
+                                setdata({ ...data, uangMakan: e.value })
+                            }
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700 text-md font-bold mb-2">
+                            Denda Telat
+                        </label>
+                        <InputMask
+                            id="dendaTelat"
+                            type="text"
+                            thousandSeparator
+                            prefix={"Rp "}
+                            value={data?.dendaTelat}
+                            onValueChange={(e) =>
+                                setdata({ ...data, dendaTelat: e.value })
+                            }
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700 text-md font-bold mb-2">
+                            Jam Telat Masuk
+                        </label>
+                        <InputMask
+                            id="jamTelatMasuk"
+                            type="text"
+                            format="##:##"
+                            placeholder="HH:MM"
+                            mask={["H", "H", "M", "M"]}
+                            value={data?.jamTelatMasuk}
+                            onValueChange={(e) =>
+                                setdata({
+                                    ...data,
+                                    jamTelatMasuk: e.value,
+                                })
+                            }
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700 text-md font-bold mb-2">
+                            Kelipatan Telat
+                        </label>
+                        <InputMask
+                            suffix={" Menit"}
+                            id="kelipatanTelatMin"
+                            type="text"
+                            value={data?.kelipatanTelatMin}
+                            onValueChange={(e) =>
+                                setdata({
+                                    ...data,
+                                    kelipatanTelatMin: Number(e.value),
+                                })
+                            }
+                        />
+                    </div>
                 </div>
             </div>
             <Button onClick={() => updateSetting()}>Simpan</Button>
@@ -369,7 +393,17 @@ const presence = () => {
                 </ButtonCard>
             </div>
 
-            <SubTitle text="Presensi Hari ini" />
+            <div className="flex items-center">
+                <SubTitle text="Presensi Harian" />
+                <DatePicker
+                    onChange={(e) => {
+                        setdatepick(e)
+                        getHistory(e)
+                    }}
+                    value={datepick}
+                    className="ml-4 mt-8 mb-4 bg-gray-50"
+                />
+            </div>
             <table className="min-w-max w-full table-auto">
                 <thead>
                     <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
