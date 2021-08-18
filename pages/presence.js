@@ -526,7 +526,11 @@ const presence = () => {
                                                     <div className="flex flex-shrink-0 text-xs items-center pr-2">
                                                         <div className="bg-red-200 text-red-900 px-2 py-1 rounded">
                                                             {"Terlambat " +
-                                                                i.lateDurationMin +
+                                                                Math.ceil(
+                                                                    Number(
+                                                                        i.lateDurationMin
+                                                                    )
+                                                                ) +
                                                                 " min"}
                                                         </div>
                                                     </div>
