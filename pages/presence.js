@@ -316,7 +316,7 @@ const presence = () => {
                     </div>
                     <div>
                         <label className="block text-gray-700 text-md font-bold mb-2">
-                            Jam Telat Masuk
+                            Batas Jam Masuk
                         </label>
                         <InputMask
                             id="jamTelatMasuk"
